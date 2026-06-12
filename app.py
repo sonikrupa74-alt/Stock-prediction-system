@@ -37,31 +37,39 @@ def predict(symbol: str):
         df.columns = ['Open','High','Low','Close','Volume']
         df = df.astype(float)
 
-        # Features
+        # Features (same as training)
         df['MA10'] = df['Close'].rolling(10).mean()
         df['MA50'] = df['Close'].rolling(50).mean()
+        df['EMA10'] = df['Close'].ewm(span=10).mean()
         df['Return'] = df['Close'].pct_change()
-        df = df.dropna()
+        df['High_Low_Diff'] = df['High'] - df['Low']
 
+        df = df.dropna()
         last = df.iloc[-1]
 
         # Input
         input_data = [[
             last['Open'], last['High'], last['Low'], last['Close'],
-            last['Volume'], last['MA10'], last['MA50'], last['Return']
+            last['Volume'], last['MA10'], last['MA50'],
+            last['EMA10'], last['Return'], last['High_Low_Diff']
         ]]
 
-        # Apply scaler ✅
+        # Scale
         input_data = scaler.transform(input_data)
 
-        # Prediction
+        # Predict (RETURN %)
         pred = model.predict(input_data)[0]
+
+        # Convert to price 🔥
+        current_price = float(last['Close'])
+        predicted_price = current_price * (1 + pred)
 
         return {
             "symbol": symbol.upper(),
-            "price": float(last['Close']),
-            "predicted": float(pred),
-            "trend": "Up" if pred > last['Close'] else "Down"
+            "current_price": current_price,
+            "predicted_price": float(predicted_price),
+            "predicted_return": float(pred),
+            "trend": "Up" if pred > 0 else "Down"
         }
 
     except Exception as e:
