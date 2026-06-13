@@ -12,50 +12,60 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <h1 className="title">📈 Stock Predictor</h1>
-
-      <div className="card">
+    <div className="app">
+      {/* Navbar */}
+      <div className="navbar">
+        <h2>📊 TickrAI</h2>
         <input
           type="text"
-          placeholder="Enter Stock (AAPL)"
+          placeholder="Search ticker (AAPL)"
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
-          className="input"
         />
+        <button onClick={fetchPrediction}>Search</button>
+      </div>
 
-        <button onClick={fetchPrediction} className="button">
-          Predict
-        </button>
+      {/* Stats Cards */}
+      {data && (
+        <>
+          <div className="stats">
+            <div className="stat-card">
+              <p>Current Price</p>
+              <h3>${data.current_price}</h3>
+            </div>
 
-        {data && (
-          <div className="result">
-            <h2>{data.symbol}</h2>
+            <div className="stat-card">
+              <p>Predicted Price</p>
+              <h3>${data.predicted_price}</h3>
+            </div>
 
-            <div className="grid">
-              <div className="box">
-                <p>Current</p>
-                <h3>${data.current_price}</h3>
-              </div>
+            <div className="stat-card">
+              <p>Return</p>
+              <h3>{(data.predicted_return * 100).toFixed(2)}%</h3>
+            </div>
 
-              <div className="box">
-                <p>Predicted</p>
-                <h3>${data.predicted_price}</h3>
-              </div>
-
-              <div className="box">
-                <p>Return</p>
-                <h3>{(data.predicted_return * 100).toFixed(2)}%</h3>
-              </div>
-
-              <div className={`box ${data.trend === "Up" ? "up" : "down"}`}>
-                <p>Trend</p>
-                <h3>{data.trend}</h3>
-              </div>
+            <div
+              className={`stat-card ${
+                data.trend === "Up" ? "green" : "red"
+              }`}
+            >
+              <p>Trend</p>
+              <h3>{data.trend}</h3>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Main Card */}
+          <div className="main-card">
+            <h2>{data.symbol}</h2>
+            <p className="trend">
+              Forecast:{" "}
+              <span className={data.trend === "Up" ? "green" : "red"}>
+                {data.trend}
+              </span>
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
