@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import os
 from dotenv import load_dotenv
-import numpy as np 
+#import numpy as np 
 
 from fastapi.middleware.cors import CORSMiddleware
 
